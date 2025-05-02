@@ -1,59 +1,73 @@
 from dash import Dash, html, dcc, Input, Output, callback
-import plotly.express as px
+from plotly.express import line
 import pandas as pd
 
 app = Dash()
 
-colors = {
+DATA_PATH = 'data/combined_data.csv'
+COLORS = {
     'background': '#ede8d0',
     'text': '#000000'
 }
 
-df = pd.read_csv('data/combined_data.csv', parse_dates=['date'])
+df = pd.read_csv(DATA_PATH, parse_dates=['date'])
 
-app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
-    html.H1(
-        children='Soul Food: Pink Morsel Sales',
-        style={
-            'textAlign': 'center',
-            'color': colors['text']
-        }
-    ),
+# Header
+header = html.H1(
+    'Soul Food: Pink Morsel Sales',
+    style={
+        'textAlign': 'center',
+        'color': COLORS['text'],
+        'border-radius': '10px'
+    }
+)
 
-    dcc.RadioItems(
-        ['north', 'east', 'south', 'west', 'all'],
-        'north',
-        id='region-picker',
-        style={
-            'textAlign': 'center',
-            'color': colors['text']
-        },
-        inline=True
-    ),
+# region picker
+region_picker = dcc.RadioItems(
+    ['north', 'east', 'south', 'west', 'all'],
+    'north',
+    id='region_picker',
+    style={
+        'textAlign': 'center',
+        'color': COLORS['text']
+    },
+    inline=True
+)
 
-    dcc.Graph(
-        id='sales_graph'
-    )
-])
+# visualizer
+visualizer = dcc.Graph(
+    id='sales_graph'
+)
+
+app.layout = html.Div(
+    [
+        header,
+        visualizer,
+        region_picker,
+    ],
+    style={
+        'background-color': COLORS['background']
+    }
+)
 
 @callback(
     Output('sales_graph', 'figure'),
-    Input('region-picker', 'value'))
+    Input('region_picker', 'value'))
 def update_graph(region):
     if region == 'all':
         dff = df.copy()
-        fig = px.line(dff, x="date", y="sales", title=f"Pink Morsel Sales for all regions")
+        fig = line(dff, x="date", y="sales", title=f"Pink Morsel Sales for All Regions")
     else:
         dff = df[df['region'] == region]
-        fig = px.line(dff, x="date", y="sales", title=f"Pink Morsel Sales for the {region}ern region")
+        fig = line(dff, x="date", y="sales", title=f"Pink Morsel Sales for the {region.capitalize()}ern Region")
 
     fig.update_layout(
-        plot_bgcolor=colors['background'],
-        paper_bgcolor=colors['background'],
-        font_color=colors['text']
+        plot_bgcolor=COLORS['background'],
+        paper_bgcolor=COLORS['background'],
+        font_color=COLORS['text']
     )
 
     return fig
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
