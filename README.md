@@ -1,4 +1,2 @@
 # Quantium starter repo
-This repo contains everything you need to get started on the program! Good luck!
-
-5.1.25 - Cloned the project and created the .venv file to download dash, pandas, and the dash testing dependencies
+To run the Dash application, run 'python app.py' to start the application on your local computer. Here, you're able to see a distinct boost in sales for Pink Morsels after the price increase on the 15th of January 2021.
